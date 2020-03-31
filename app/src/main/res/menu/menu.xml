@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/Agregar"
+        android:icon="@drawable/add_icon_blue"
+        android:title="Add"
+        app:showAsAction="always"></item>
+    <item
+        android:id="@+id/Listar"
+        android:icon="@drawable/checklist_icon"
+        android:title="List"
+        app:showAsAction="always"></item>
+    <item
+        android:id="@+id/ListMovimiento"
+        android:icon="@drawable/mov_icon"
+        android:title="List Movimiento"
+        app:showAsAction="always"></item>
+    <item
+        android:id="@+id/Modificar"
+        android:title="Upd"
+        app:showAsAction="never"></item>
+</menu>

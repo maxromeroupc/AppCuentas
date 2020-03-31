@@ -21,6 +21,17 @@ public class VentasDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
+        //CREAR LA TABLA PRODUCTO
+        db.execSQL("CREATE TABLE "+ VentasContract.VentasEntry.TABLE_NAME_PRODUCTO + " ("
+                + VentasContract.VentasEntry.IdProducto + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + VentasContract.VentasEntry.NombreProducto + " TEXT NOT NULL,"
+                + VentasContract.VentasEntry.DescripcionProducto + " TEXT NOT NULL,"
+                + VentasContract.VentasEntry.CostoProducto + " DECIMAL NOT NULL,"
+                + VentasContract.VentasEntry.PrecioProducto + " DECIMAL NOT NULL,"
+                + VentasContract.VentasEntry.CantidadProducto + " INTEGER NOT NULL,"
+                + "UNIQUE (" + VentasContract.VentasEntry.IdProducto + "))");
+
         //CREAR LA TABLA
         db.execSQL("CREATE TABLE " + VentasContract.VentasEntry.TABLE_NAME + " ("
                 + VentasContract.VentasEntry.IdVentas + " INTEGER PRIMARY KEY AUTOINCREMENT,"

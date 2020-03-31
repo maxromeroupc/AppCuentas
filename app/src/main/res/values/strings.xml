@@ -8,4 +8,11 @@
     <string name="lblPrecio">Precio :</string>
     <string name="btnGuardar">Guardar</string>
     <string name="lblCantidad">Cantidad :</string>
+    <string name="title_registrar_producto">Registrar Producto</string>
+    <string name="nombre_producto">Nombre Producto</string>
+    <string name="descripcion_producto">Descripcion Producto</string>
+    <string name="costo_producto">Costo Producto</string>
+    <string name="precio_venta">Precio Venta</string>
+    <string name="cantidad_producto">Cantidad Producto</string>
+    <string name="title_listado_productos">Listado de Productos</string>
 </resources>
