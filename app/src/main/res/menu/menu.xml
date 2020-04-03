@@ -2,11 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/Agregar"
-        android:icon="@drawable/add_icon_blue"
-        android:title="Add"
-        app:showAsAction="always"></item>
+
     <item
         android:id="@+id/Listar"
         android:icon="@drawable/checklist_icon"

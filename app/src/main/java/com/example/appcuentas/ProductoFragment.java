@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.example.appcuentas.Datos.VentasContract;
 import com.example.appcuentas.Datos.VentasDbHelper;
@@ -45,6 +45,9 @@ public class ProductoFragment extends Fragment {
     private List<Producto> listProducto;
     private OnListFragmentInteractionListener mListener;
     private FloatingActionButton fabAddProduct;
+
+    private TextView txtResumen;
+    private int vgloCantidad;
 
     //endregion
 
@@ -79,6 +82,8 @@ public class ProductoFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_producto_list, container, false);
 
+        txtResumen = view.findViewById(R.id.txtResumen);
+
         fabAddProduct = (FloatingActionButton) view.findViewById(R.id.fabAddProduct);
         fabAddProduct.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,21 +102,10 @@ public class ProductoFragment extends Fragment {
         // Set the adapter
         recListProducts = view.findViewById(R.id.reclist);
         recListProducts.setLayoutManager(new GridLayoutManager(this.getContext(), mColumnCount));
-        recListProducts.setAdapter(new MyItemRecyclerViewAdapter2(listProducto,mListener));
-        /*
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter2(listProducto,null));
-            //recyclerView.setAdapter(new MyItemRecyclerViewAdapter2(DummyContent.ITEMS,null));
-            //recyclerView.setAdapter(new MyItemRecyclerViewAdapter2(DummyContent.ITEMS, mListener));
-        }
-        */
+        recListProducts.setAdapter(new MyProductoRecyclerViewAdapter(listProducto,mListener));
+
+        setValues();
+
         return view;
     }
 
@@ -149,18 +143,22 @@ public class ProductoFragment extends Fragment {
                 );
         Producto oProd ;
         if(curProductos.moveToFirst()){
-            while(curProductos.moveToNext()) {
+            do{
                 oProd = new Producto();
                 oProd.setIdProducto(curProductos.getInt(0));
                 oProd.setNombreProducto(curProductos.getString(1));
                 oProd.setPrecioProducto(curProductos.getFloat(4));
+                vgloCantidad = vgloCantidad + 1;
                 listProducto.add(oProd);
-            }
+            }while(curProductos.moveToNext());
         }
         //Log.e("Mensaje","Cantidad :" + listProducto.size());
 
     }
 
+    private void setValues(){
+        txtResumen.setText( "Cantidad :" + String.valueOf(vgloCantidad) );
+    }
 
      //endregion
 
@@ -179,7 +177,7 @@ public class ProductoFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(String pIdProducto);
-        void onRefresh();
+        void onRefresh(int pOpcion);
     }
 
 

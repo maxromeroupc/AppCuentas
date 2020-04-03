@@ -6,20 +6,36 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.strictmode.SqliteObjectLeakedViolation;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.TabWidget;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.appcuentas.Datos.VentasContract;
 import com.example.appcuentas.Datos.VentasDbHelper;
+import com.example.appcuentas.Entidades.Producto;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.Inflater;
 
 public class RegistrarMovimientoFragment extends Fragment implements View.OnClickListener {
@@ -30,13 +46,22 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
 
     public static RegistrarMovimientoFragment newInstance(int columnCount) {
         RegistrarMovimientoFragment fragment = new RegistrarMovimientoFragment();
-
         return fragment;
     }
 
     //Var globales
-    private EditText edtxtProducto,edtxtPrecio,edtxtCantidad;
-    private Button btnGuardar;
+    private EditText edtxtProducto,edtxtPrecio,edtxtCantidad,
+        edtxtDescuento, edtxtTotal;
+    private TextView txtTitleRegMov;
+    private ImageButton btnGuardar, ibtnCancel;
+    private Spinner spnProducto;
+    private List<Producto> arrListProducto = new ArrayList<Producto>();
+    float floPre =0, floCan=0, floDesc=0;
+    int gloIdProducto = 0;
+    String gloProducto="";
+    int pgloIdVentas = 0; //Se usa para determinar si se va a Editar el registro o crear 1 nuevo, si es diferente de 0 es una edición
+    int pgloIdProducto = 0, pgloPostionProducto=0;
+
 
     @Nullable
     @Override
@@ -44,20 +69,134 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
          super.onCreateView(inflater, container, savedInstanceState);
         //Se debe dibujar la vista
         View view = inflater.inflate(R.layout.fragment_registrar_movimiento,container,false);
+        //Verificar si se va editar o registrar
+        if(getArguments() != null){
+            pgloIdVentas = Integer.parseInt( getArguments().getString("IdVentas") );
+        }
+
         edtxtProducto = view.findViewById(R.id.edtxtProducto);
         edtxtPrecio= view.findViewById(R.id.edtxtPrecio);
         edtxtCantidad = view.findViewById(R.id.edtxtCantidad);
+        edtxtDescuento = view.findViewById(R.id.edtxtDescuento);
+        edtxtTotal = view.findViewById(R.id.edtxtTotal);
+        txtTitleRegMov = view.findViewById(R.id.lblTitRegMov);
+
         btnGuardar= view.findViewById(R.id.btnGuardar);
+        ibtnCancel = view.findViewById(R.id.ibtnCancel);
 
         btnGuardar.setOnClickListener(this);
+        ibtnCancel.setOnClickListener(this);
+
+        spnProducto = view.findViewById(R.id.spnProducto);
+
+        //Valores por defecto
+        setDefaultValues();
+
+        arrListProducto = listarProducto();
+        ArrayAdapter<Producto> arrAdapterProd =
+                new ArrayAdapter<Producto>(getContext(),
+                        android.R.layout.simple_spinner_item,
+                        arrListProducto);
+
+        arrAdapterProd.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        spnProducto.setAdapter( arrAdapterProd );
+
+        //Valor por fdefecto del spiner, si es registrar serà el item 0
+        spnProducto.setSelection(pgloPostionProducto);
+
+
+        //Evento Seleccionar Spinner
+        spnProducto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Producto oProd = (Producto) parent.getSelectedItem();
+                edtxtPrecio.setText(String.valueOf(oProd.getPrecioProducto()));
+                gloIdProducto = oProd.getIdProducto();
+                gloProducto = oProd.getNombreProducto().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        //Calculando el Total
+        floPre = deafultFloat( edtxtPrecio.getText().toString() );
+        floCan = deafultFloat( edtxtCantidad.getText().toString() );
+        floDesc = deafultFloat( edtxtDescuento.getText().toString() );
+
+        edtxtCantidad.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                floPre = deafultFloat( edtxtPrecio.getText().toString() );
+                floCan = deafultFloat( edtxtCantidad.getText().toString() );
+                floDesc = deafultFloat( edtxtDescuento.getText().toString() );
+                edtxtTotal.setText( String.valueOf( calcularTotal(floPre, floCan, floDesc) ) );
+            }
+        });
+
+        edtxtDescuento.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                floPre = deafultFloat( edtxtPrecio.getText().toString() );
+                floCan = deafultFloat( edtxtCantidad.getText().toString() );
+                floDesc = deafultFloat( edtxtDescuento.getText().toString() );
+                edtxtTotal.setText( String.valueOf( calcularTotal(floPre, floCan, floDesc) ) );
+            }
+        });
+
+        edtxtPrecio.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                floPre = deafultFloat( edtxtPrecio.getText().toString() );
+                floCan = deafultFloat( edtxtCantidad.getText().toString() );
+                floDesc = deafultFloat( edtxtDescuento.getText().toString() );
+                edtxtTotal.setText( String.valueOf( calcularTotal(floPre, floCan, floDesc) ) );
+            }
+        });
+
+
+
+
+
         return view;
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
 
@@ -69,36 +208,165 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
 
     @Override
     public void onClick(View v) {
-        registrarMovimiento();
+        switch (v.getId()){
+            case R.id.btnGuardar:
+                registrarMovimiento();
+                break;
+            case R.id.ibtnCancel:
+                FragmentManager fragmentManager = getFragmentManager();
+                ListarMovimientoFragment moviFragmentlist = new ListarMovimientoFragment();
+                FragmentTransaction fragmentTransactionMov = fragmentManager.beginTransaction();
+                fragmentTransactionMov.replace(R.id.ContentFrame,moviFragmentlist).commit();
+                break;
+        }
+
     }
+
+    //region Procedimientos
 
     public void registrarMovimiento(){
         VentasDbHelper ventasDbHelper = new VentasDbHelper(this.getContext());
         SQLiteDatabase db = ventasDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
+        String vstrTotal = edtxtCantidad.getText().toString();
 
-        //values.put(VentasContract.VentasEntry.IdVentas, 5);
-        values.put(VentasContract.VentasEntry.IdProducto, 1);
-        values.put(VentasContract.VentasEntry.Producto, edtxtProducto.getText().toString());
-        values.put(VentasContract.VentasEntry.Cantidad, edtxtCantidad.getText().toString());
-        values.put(VentasContract.VentasEntry.Precio, edtxtPrecio.getText().toString());
-        values.put(VentasContract.VentasEntry.Costo, 30);
+        String strMsgValidacion = validarRegistro(vstrTotal);
 
-        Long resInsert = db.insert(VentasContract.VentasEntry.TABLE_NAME,null,values);
-        //db.close();
+        if(strMsgValidacion.equalsIgnoreCase("")) {
+            //si pasa las validaciones nos e manda mensaje
+            //values.put(VentasContract.VentasEntry.IdVentas, 5);
+            values.put(VentasContract.VentasEntry.IdProducto, gloIdProducto);
+            values.put(VentasContract.VentasEntry.Producto, gloProducto);
+            values.put(VentasContract.VentasEntry.Cantidad, edtxtCantidad.getText().toString());
+            values.put(VentasContract.VentasEntry.Precio, edtxtTotal.getText().toString());
+            values.put(VentasContract.VentasEntry.Costo, 30);
 
-        Cursor cursor = db.query(VentasContract.VentasEntry.TABLE_NAME
-        ,null,null,null,null,null,null   );
+            try {
+                if(pgloIdVentas == 0){
+                    Long resInsert = db.insert(VentasContract.VentasEntry.TABLE_NAME, null, values);
+                    if (resInsert > 0) {
+                        Toast.makeText(getContext(), "Movimiento registrado.", Toast.LENGTH_SHORT).show();
+                        goToListMovimiento();
+                    }
+                }else{
+                    int resUpd = db.update(VentasContract.VentasEntry.TABLE_NAME,values,
+                            "IdVentas=?",
+                            new String[]{ String.valueOf(pgloIdVentas) }
+                            );
+                    if(resUpd > 0){
+                        Toast.makeText(this.getContext(),"Movimiento Actualizado.",Toast.LENGTH_SHORT).show();
+                        goToListMovimiento();
+                    }
+                }
 
-        int cant = cursor.getCount();
-        Log.i("Cantidad : ", String.valueOf( cant ) );
-        if (cursor.moveToFirst()) {
+            } catch (Exception e) {
+                Toast.makeText(getContext(), e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            } finally {
+                db.close();
+            }
+        }else{
+            Toast.makeText(getContext(), strMsgValidacion, Toast.LENGTH_SHORT).show();
+        }
+
+
+
+    }
+
+    private String validarRegistro(String pstrTotal){
+        String strValidacion = "";
+        if(pstrTotal.equalsIgnoreCase("") || pstrTotal.equalsIgnoreCase("0") ) {
+            strValidacion = "El total no puede ser nulo o 0.";
+        }
+        return strValidacion;
+    }
+
+    //Regresar al listado
+    private void goToListMovimiento(){
+        ListarMovimientoFragment listar = new ListarMovimientoFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.ContentFrame,listar).commit();
+    }
+
+    private List<Producto> listarProducto(){
+        //Llena el spinner de Producto
+        List<Producto> olstProducto = new ArrayList<Producto>();
+        Producto oProd;
+        VentasDbHelper ventasDbHelper = new VentasDbHelper(getContext());
+        SQLiteDatabase db = ventasDbHelper.getReadableDatabase();
+        Cursor curProd = db.rawQuery("Select IdProducto, NombreProducto, PrecioProducto from Producto",
+                null);
+
+        if( curProd.moveToFirst() ) {
             do {
-                Log.i("Id Ventas : ", cursor.getString(0));
-                Log.i("Producto Venta :", cursor.getString(2));
-            } while (cursor.moveToNext());
+                oProd = new Producto();
+                oProd.setIdProducto(curProd.getInt(curProd.getColumnIndex("IdProducto")));
+                oProd.setNombreProducto(curProd.getString(curProd.getColumnIndex("NombreProducto")));
+                oProd.setPrecioProducto( curProd.getFloat(curProd.getColumnIndex("PrecioProducto")) );
+                if(pgloIdProducto == oProd.getIdProducto()){
+                    pgloPostionProducto = curProd.getPosition();
+                }
+                olstProducto.add(oProd);
+            } while (curProd.moveToNext());
         }
         db.close();
+
+        return  olstProducto;
     }
+
+    private void setDefaultValues(){
+        if(pgloIdVentas != 0){
+            txtTitleRegMov.setText("Modificar Movimiento");
+            listMovimiento( pgloIdVentas );
+            edtxtDescuento.setText("0");
+        }else{
+            edtxtDescuento.setText("0");
+            edtxtCantidad.setText("1");
+
+        }
+
+
+
+    }
+
+    private void listMovimiento(int pIdVentas){
+        VentasDbHelper ventasDbHelper = new VentasDbHelper(getContext());
+        SQLiteDatabase db = ventasDbHelper.getReadableDatabase();
+        Cursor curMov = db.rawQuery("Select * from Ventas where IdVentas=?",
+                new String[]{ String.valueOf( pIdVentas) });
+
+        //Log.e("Msg Movimiento",String.valueOf( curMov.getCount() ));
+
+        if(curMov.moveToFirst()){
+            //edtxtPrecio.setText( curMov.getInt( curMov.getColumnIndex("Precio") ) );
+            edtxtCantidad.setText( String.valueOf( curMov.getInt( curMov.getColumnIndex("Cantidad") ) ));
+            //edtxtDescuento.setText( curMov.getInt( curMov.getColumnIndex("Descuento") ) );
+            edtxtTotal.setText( String.valueOf(  curMov.getInt( curMov.getColumnIndex("Precio") ) ));
+            pgloIdProducto = curMov.getInt(curMov.getColumnIndex("IdProducto"));
+        }
+        db.close();
+
+
+    }
+
+    private float calcularTotal( float pPrecio, float pCantidad, float pDescuento ){
+        float floatTotal = 0;
+        floatTotal = (pPrecio*pCantidad) - pDescuento;
+
+        return floatTotal;
+    }
+
+    private float deafultFloat(String pstrValor ){
+        float pValor = 0;
+        if( pstrValor.equalsIgnoreCase("") ){
+            pValor = 0;
+        }else{
+            pValor = Float.parseFloat( pstrValor ) ;
+        }
+
+        return pValor;
+    }
+
+    //endregion
 
 }

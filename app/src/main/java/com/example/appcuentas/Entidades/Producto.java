@@ -1,5 +1,7 @@
 package com.example.appcuentas.Entidades;
 
+import androidx.annotation.NonNull;
+
 public class Producto {
 
     private int idProducto;
@@ -68,4 +70,12 @@ public class Producto {
     public void setIdProducto(int idProducto) {
         this.idProducto = idProducto;
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return nombreProducto;
+    }
+
+
 }

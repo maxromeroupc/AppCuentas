@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/txtTitleList"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
-        android:text="@string/title_listado_productos"
-        android:textAlignment="center"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+        <TextView
+            android:id="@+id/txtTitleMovimiento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="@string/listado_de_movimientos"
+            android:textAlignment="center"
+            android:textSize="20dp"
+
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
 
     <ScrollView
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
@@ -28,41 +29,41 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:orientation="vertical">
 
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/reclist"
-                android:name="com.example.appcuentas.ProductoFragment"
+                android:id="@+id/recListMov"
+                android:name="com.example.appcuentas.ListarMovimientoFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layoutManager="LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:context=".ProductoFragment"
-                tools:layout_editor_absoluteX="0dp"
-                tools:listitem="@layout/fragment_producto_item">
+                tools:context=".ListarMovimientoFragment"
+                tools:listitem="@layout/fragment_movimiento_item">
 
 
             </androidx.recyclerview.widget.RecyclerView>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabAddProduct"
+                android:id="@+id/fabAddMov"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="30dp"
+
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
                 android:layout_marginBottom="40dp"
                 android:clickable="true"
-                android:foregroundGravity="bottom"
-                android:overScrollMode="always"
                 android:src="@drawable/add_icon_blue"
-                app:backgroundTint="@color/colorPrimaryDark"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:srcCompat="@drawable/add_icon_blue" />
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </ScrollView>
 
     <TextView
@@ -70,9 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:textColor="@color/colorPrimaryDark"
         android:text="Resumen" />
 
-
 </LinearLayout>
-
-

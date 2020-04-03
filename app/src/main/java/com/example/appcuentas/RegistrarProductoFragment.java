@@ -60,7 +60,7 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
     private EditText edtxtNombreProducto,edtxtDescripcionProducto,edtxtPrecioProducto
             ,edtxtCostoProducto, edtxtCantidadProducto;
 
-    private ImageButton ibtnGuardarProducto;
+    private ImageButton ibtnGuardarProducto, ibtnCancel;
     private String vStrIdProducto;
     private TextView txtTitleRegProduct;
 
@@ -99,7 +99,12 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
         edtxtCantidadProducto= (EditText) view.findViewById(R.id.edtxtCantidadProducto);
 
         ibtnGuardarProducto = (ImageButton) view.findViewById( R.id.ibtGuardar );
+        ibtnCancel = view.findViewById(R.id.ibtnCancel);
+
         ibtnGuardarProducto.setOnClickListener(this);
+        ibtnCancel.setOnClickListener(this);
+
+
 
         edtxtNombreProducto.setText(vStrIdProducto);
 
@@ -154,8 +159,12 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
                     goListProduct();
                     Toast.makeText(getContext(), strMsg, Toast.LENGTH_SHORT).show();
                 }
-
-
+                break;
+            case R.id.ibtnCancel:
+                FragmentManager fragmentManager = getFragmentManager();
+                ProductoFragment productoFragmentlist = new ProductoFragment();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.ContentFrame,productoFragmentlist).commit();
                 break;
         }
     }

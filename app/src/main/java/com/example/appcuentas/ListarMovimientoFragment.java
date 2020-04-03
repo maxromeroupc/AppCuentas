@@ -1,9 +1,14 @@
 package com.example.appcuentas;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,10 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.textclassifier.TextClassification;
+import android.widget.TextView;
 
+import com.example.appcuentas.Datos.VentasDbHelper;
+import com.example.appcuentas.Entidades.Ventas;
 import com.example.appcuentas.dummy.DummyContent;
-import com.example.appcuentas.dummy.DummyContent.DummyItem;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,10 +41,17 @@ public class ListarMovimientoFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
+    //region Variables globales
+    private RecyclerView recListMov;
+    private ArrayList listMov = new ArrayList();
+    private FloatingActionButton fabAddMov;
+
+    private TextView txtResumen;
+    private int vgloCantidadTotalMov = 0;
+    private float vgloTotalMov = 0;
+    //endregion
+
+
     public ListarMovimientoFragment() {
     }
 
@@ -60,19 +77,29 @@ public class ListarMovimientoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_item_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_movimiento_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        txtResumen = view.findViewById(R.id.txtResumen);
+
+        recListMov = view.findViewById(R.id.recListMov);
+        recListMov.setLayoutManager(new GridLayoutManager(getContext(),1) );
+        List<Ventas> listMovAdap = listarMovimientos();
+        recListMov.setAdapter(new MyMovimientoRecyclerViewAdapter(listMovAdap, mListener));
+
+        fabAddMov= view.findViewById(R.id.fabAddMov);
+        fabAddMov.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RegistrarMovimientoFragment regMovFragment =  new RegistrarMovimientoFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.ContentFrame,regMovFragment).commit();
             }
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
-        }
+        });
+
+        //Seteando Valores
+        setValues();
+
         return view;
     }
 
@@ -106,6 +133,44 @@ public class ListarMovimientoFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction();
+        void onListFragmentInteraction(int pIdVentas);
+        void onRefresh(int pOpcion);
     }
+
+    //region Procedimientos y Metodos
+    List<Ventas> listarMovimientos(){
+        Ventas oVentas;
+        VentasDbHelper ventasDbHelper = new VentasDbHelper(getContext());
+        SQLiteDatabase db = ventasDbHelper.getReadableDatabase();
+        Cursor curListMov =
+                db.rawQuery("select IdVentas,IdProducto,Producto,Cantidad,Precio,Costo from Ventas",
+                        null);
+
+        if(curListMov.moveToFirst()){
+            do{
+                oVentas = new Ventas();
+                oVentas.setIdVentas(curListMov.getInt(curListMov.getColumnIndex("IdVentas")));
+                oVentas.setProducto(curListMov.getString(curListMov.getColumnIndex("Producto")));
+                oVentas.setPrecio(curListMov.getFloat(curListMov.getColumnIndex("Precio")));
+                vgloCantidadTotalMov = vgloCantidadTotalMov + 1;
+                vgloTotalMov = vgloTotalMov + oVentas.getPrecio();
+                listMov.add(oVentas);
+            }while(curListMov.moveToNext());
+
+        }else{
+            oVentas = new Ventas();
+            oVentas.setIdProducto(0);
+            oVentas.setProducto("Sin Movimientos");
+            listMov.add(oVentas);
+        }
+        db.close();
+        return listMov;
+    }
+
+    private void setValues(){
+        txtResumen.setText( "Cantidad : " + String.valueOf(vgloCantidadTotalMov) + " - Total : " + String.valueOf(vgloTotalMov));
+    }
+
+    //endregion
+
 }

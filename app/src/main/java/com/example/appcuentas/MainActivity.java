@@ -32,9 +32,10 @@ public class MainActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
-        ProductoFragment productoFragment = new ProductoFragment();
+        //Pantalla inicial
+        ListarMovimientoFragment listarMovimientoFragment = new ListarMovimientoFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.ContentFrame,productoFragment).commit();
+        fragmentTransaction.add(R.id.ContentFrame,listarMovimientoFragment).commit();
 
     }
 
@@ -51,11 +52,7 @@ public class MainActivity
         FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
 
         switch(item.getItemId()){
-            case R.id.Agregar:
-                RegistrarProductoFragment registrarProductoFragment= new RegistrarProductoFragment();
-                fragmentTransaction.replace(R.id.ContentFrame,registrarProductoFragment).commit();
-                //fragmentTransaction.add(R.id.ContentFrame,registrarProductoFragment).commit();
-                break;
+
             case R.id.Listar:
                 ProductoFragment productoFragment = new ProductoFragment();
                 fragmentTransaction.replace(R.id.ContentFrame,productoFragment).commit();
@@ -87,15 +84,32 @@ public class MainActivity
     }
 
     @Override
-    public void onRefresh() {
-        ProductoFragment productoFragmentlist = new ProductoFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.ContentFrame,productoFragmentlist).commit();
+    public void onRefresh(int pOpcion) {
+        switch(pOpcion){
+            case 1:
+                ProductoFragment productoFragmentlist = new ProductoFragment();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.ContentFrame,productoFragmentlist).commit();
+                break;
+
+            case 2:
+                ListarMovimientoFragment moviFragmentlist = new ListarMovimientoFragment();
+                FragmentTransaction fragmentTransactionMov = fragmentManager.beginTransaction();
+                fragmentTransactionMov.replace(R.id.ContentFrame,moviFragmentlist).commit();
+                break;
+
+        }
+
     }
 
     @Override
-    public void onListFragmentInteraction() {
-
+    public void onListFragmentInteraction(int pIdVentas) {
+        RegistrarMovimientoFragment regMovFrag = new RegistrarMovimientoFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("IdVentas", String.valueOf(pIdVentas));
+        regMovFrag.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.ContentFrame,regMovFrag).commit();
     }
 }
 

@@ -23,13 +23,13 @@ import java.util.List;
  * specified {//@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyItemRecyclerViewAdapter2
-        extends RecyclerView.Adapter<MyItemRecyclerViewAdapter2.ViewHolder> {
+public class MyProductoRecyclerViewAdapter
+        extends RecyclerView.Adapter<MyProductoRecyclerViewAdapter.ViewHolder> {
 
     private final List<Producto> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyItemRecyclerViewAdapter2(List<Producto> items, OnListFragmentInteractionListener listener) {
+    public MyProductoRecyclerViewAdapter(List<Producto> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -85,8 +85,6 @@ public class MyItemRecyclerViewAdapter2
             ibtnDelProduct = (ImageButton) view.findViewById(R.id.ibtnDelProduct);
             txtPrecioProducto = (TextView) view.findViewById(R.id.txtPrecioProducto);
 
-
-
             ibtnEditProduct.setOnClickListener(this);
             ibtnDelProduct.setOnClickListener(this);
 
@@ -116,9 +114,8 @@ public class MyItemRecyclerViewAdapter2
                         //si se elimina el registro
                         Toast.makeText(v.getContext(),"Eliminar registro.",Toast.LENGTH_SHORT).show();
                         if(mListener != null){
-                            mListener.onRefresh();
+                            mListener.onRefresh(1);
                         }
-
                     }
                     break;
             }
