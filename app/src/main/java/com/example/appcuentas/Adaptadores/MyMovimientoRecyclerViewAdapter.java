@@ -1,7 +1,5 @@
-package com.example.appcuentas;
+package com.example.appcuentas.Adaptadores;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.database.sqlite.SQLiteDatabase;
@@ -13,23 +11,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.appcuentas.Datos.VentasDbHelper;
-import com.example.appcuentas.Entidades.Ventas;
+import com.example.appcuentas.Entidades.Movimiento;
 import com.example.appcuentas.ListarMovimientoFragment.OnListFragmentInteractionListener;
-import com.example.appcuentas.dummy.DummyContent.DummyItem;
+import com.example.appcuentas.R;
+
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyMovimientoRecyclerViewAdapter extends RecyclerView.Adapter<MyMovimientoRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Ventas> mValues;
+    private final List<Movimiento> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyMovimientoRecyclerViewAdapter(List<Ventas> items, OnListFragmentInteractionListener listener) {
+    public MyMovimientoRecyclerViewAdapter(List<Movimiento> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -44,9 +43,10 @@ public class MyMovimientoRecyclerViewAdapter extends RecyclerView.Adapter<MyMovi
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.txtIdVentas.setText( String.valueOf( mValues.get(position).getIdVentas()));
+        holder.txtIdVentas.setText( String.valueOf( mValues.get(position).getIdMovimiento()));
         holder.txtProductoVentas.setText(mValues.get(position).getProducto());
         holder.txtPrecioVenta.setText(String.valueOf(mValues.get(position).getPrecio() ));
+        holder.txtTotal.setText( String.valueOf(mValues.get(position).getTotal() ) );
 
     }
 
@@ -56,19 +56,23 @@ public class MyMovimientoRecyclerViewAdapter extends RecyclerView.Adapter<MyMovi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         public final View mView;
         public final TextView txtIdVentas;
         public final TextView txtProductoVentas;
-        public TextView txtPrecioVenta;
-        public Ventas mItem;
+
+        public TextView txtPrecioVenta,txtTotal;
+        public Movimiento mItem;
         public ImageButton ibtnEditMov, ibtnDelMov;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            txtIdVentas = (TextView) view.findViewById(R.id.txtIdVentas);
-            txtProductoVentas = (TextView) view.findViewById(R.id.txtProductoVentas);
-            txtPrecioVenta = (TextView) view.findViewById(R.id.txtPrecioVentas);
+            txtIdVentas =  view.findViewById(R.id.txtIdVentas);
+            txtProductoVentas =  view.findViewById(R.id.txtProductoVentas);
+            txtPrecioVenta =  view.findViewById(R.id.txtPrecioVentas);
+            txtTotal = view.findViewById(R.id.txtTotal);
+
             ibtnEditMov = view.findViewById(R.id.ibtnEditMov);
             ibtnDelMov = view.findViewById(R.id.ibtnDelMov);
 
@@ -95,16 +99,20 @@ public class MyMovimientoRecyclerViewAdapter extends RecyclerView.Adapter<MyMovi
             }
         }
 
-        private void goToEditMov(int pstrIdVentas){
-
-        }
-
         private void deleteMovimiento(String pstrIdVentas){
             VentasDbHelper ventasDbHelper = new VentasDbHelper(this.mView.getContext());
-            SQLiteDatabase db = ventasDbHelper.getWritableDatabase();
-            db.execSQL("Delete from Ventas where IdVentas=?",
-                    new String[]{pstrIdVentas}
-                    );
+            SQLiteDatabase db = null;
+            try {
+                db = ventasDbHelper.getWritableDatabase();
+                db.execSQL("Delete from Movimiento where IdMovimiento=?",
+                        new String[]{pstrIdVentas}
+                );
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }finally {
+                db.close();
+            }
+
         }
 
 

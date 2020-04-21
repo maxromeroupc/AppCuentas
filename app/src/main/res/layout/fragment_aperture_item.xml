@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
+    android:orientation="horizontal"
+    >
+
+
+        <TextView
+            android:id="@+id/txtIdAperture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:hint="idAperture"
+            android:textAppearance="?attr/textAppearanceListItem" />
+
+        <TextView
+            android:id="@+id/txtFechaInicioApertura"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="2"
+            android:hint="FechaInicioApertura"
+            android:textAppearance="?attr/textAppearanceListItem" />
+
+        <TextView
+            android:id="@+id/txtEstadoApertura"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:hint="Estado"
+            android:textAppearance="?attr/textAppearanceListItem"
+             />
+
+        <TextView
+            android:id="@+id/txtSincronizado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:hint="Sincronizado" />
+
+        <ImageButton
+            android:id="@+id/ibtnEditAperture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_icon_blue"
+            android:src="@drawable/edit_icon_blue"></ImageButton>
+
+        <ImageButton
+            android:id="@+id/ibtnDelAperture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/trash_icon_red_24"
+            android:src="@drawable/trash_icon_red_24"
+            >
+
+        </ImageButton>
+
+
+</LinearLayout>

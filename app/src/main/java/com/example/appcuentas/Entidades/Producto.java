@@ -10,17 +10,19 @@ public class Producto {
     private float costoProducto;
     private float precioProducto;
     private int cantidadProducto;
+    private String rutaImagenProducto;
 
     public Producto(){
 
     }
 
-    public Producto(String nombreProducto, String descripcionProducto, float costoProducto, float precioProducto, int cantidadProducto) {
+    public Producto(String nombreProducto, String descripcionProducto, float costoProducto, float precioProducto, int cantidadProducto, String rutaImagenProducto) {
         this.nombreProducto = nombreProducto;
         this.descripcionProducto = descripcionProducto;
         this.costoProducto = costoProducto;
         this.precioProducto = precioProducto;
         this.cantidadProducto = cantidadProducto;
+        this.rutaImagenProducto =    rutaImagenProducto;
     }
 
     public String getNombreProducto() {
@@ -70,6 +72,16 @@ public class Producto {
     public void setIdProducto(int idProducto) {
         this.idProducto = idProducto;
     }
+
+    public String getRutaImagenProducto() {
+        return rutaImagenProducto;
+    }
+
+    public void setRutaImagenProducto(String rutaProducto) {
+        rutaImagenProducto = rutaProducto;
+    }
+
+
 
     @NonNull
     @Override

@@ -50,31 +50,30 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
     }
 
     //Var globales
-    private EditText edtxtProducto,edtxtPrecio,edtxtCantidad,
+    private EditText edtxtPrecio,edtxtCantidad,
         edtxtDescuento, edtxtTotal;
     private TextView txtTitleRegMov;
     private ImageButton btnGuardar, ibtnCancel;
     private Spinner spnProducto;
     private List<Producto> arrListProducto = new ArrayList<Producto>();
-    float floPre =0, floCan=0, floDesc=0;
-    int gloIdProducto = 0;
-    String gloProducto="";
-    int pgloIdVentas = 0; //Se usa para determinar si se va a Editar el registro o crear 1 nuevo, si es diferente de 0 es una edición
-    int pgloIdProducto = 0, pgloPostionProducto=0;
+    private float floPre =0, floCan=0, floDesc=0;
+    private int gloIdProducto = 0;
+
+    private int pgloIdVentas = 0; //Se usa para determinar si se va a Editar el registro o crear 1 nuevo, si es diferente de 0 es una edición
+    private int pgloIdProducto = 0, pgloPostionProducto=0;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
          super.onCreateView(inflater, container, savedInstanceState);
-        //Se debe dibujar la vista
+
         View view = inflater.inflate(R.layout.fragment_registrar_movimiento,container,false);
         //Verificar si se va editar o registrar
         if(getArguments() != null){
             pgloIdVentas = Integer.parseInt( getArguments().getString("IdVentas") );
         }
 
-        edtxtProducto = view.findViewById(R.id.edtxtProducto);
         edtxtPrecio= view.findViewById(R.id.edtxtPrecio);
         edtxtCantidad = view.findViewById(R.id.edtxtCantidad);
         edtxtDescuento = view.findViewById(R.id.edtxtDescuento);
@@ -92,18 +91,50 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
         //Valores por defecto
         setDefaultValues();
 
+        setSpinnerListProducts();
+
+        setTextListenerChangeTotal();
+
+        return view;
+    }
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btnGuardar:
+                registrarMovimiento();
+                break;
+            case R.id.ibtnCancel:
+                goToListMovimiento();
+                break;
+        }
+
+    }
+
+    //region Procedimientos
+
+    private void setSpinnerListProducts(){
         arrListProducto = listarProducto();
-        ArrayAdapter<Producto> arrAdapterProd =
-                new ArrayAdapter<Producto>(getContext(),
-                        android.R.layout.simple_spinner_item,
-                        arrListProducto);
+        ArrayAdapter<Producto> arrAdapterProd = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_item,
+                arrListProducto);
 
         arrAdapterProd.setDropDownViewResource(android.R.layout.simple_spinner_item);
         spnProducto.setAdapter( arrAdapterProd );
 
-        //Valor por fdefecto del spiner, si es registrar serà el item 0
+        //Valor por defecto del spiner, si es registrar serà el item 0
         spnProducto.setSelection(pgloPostionProducto);
-
 
         //Evento Seleccionar Spinner
         spnProducto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -112,7 +143,6 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
                 Producto oProd = (Producto) parent.getSelectedItem();
                 edtxtPrecio.setText(String.valueOf(oProd.getPrecioProducto()));
                 gloIdProducto = oProd.getIdProducto();
-                gloProducto = oProd.getNombreProducto().toString();
             }
 
             @Override
@@ -121,6 +151,9 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
             }
         });
 
+    }
+
+    private void setTextListenerChangeTotal() {
         //Calculando el Total
         floPre = deafultFloat( edtxtPrecio.getText().toString() );
         floCan = deafultFloat( edtxtCantidad.getText().toString() );
@@ -185,46 +218,9 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
                 edtxtTotal.setText( String.valueOf( calcularTotal(floPre, floCan, floDesc) ) );
             }
         });
-
-
-
-
-
-        return view;
     }
 
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.btnGuardar:
-                registrarMovimiento();
-                break;
-            case R.id.ibtnCancel:
-                FragmentManager fragmentManager = getFragmentManager();
-                ListarMovimientoFragment moviFragmentlist = new ListarMovimientoFragment();
-                FragmentTransaction fragmentTransactionMov = fragmentManager.beginTransaction();
-                fragmentTransactionMov.replace(R.id.ContentFrame,moviFragmentlist).commit();
-                break;
-        }
-
-    }
-
-    //region Procedimientos
-
-    public void registrarMovimiento(){
+    private void registrarMovimiento(){
         VentasDbHelper ventasDbHelper = new VentasDbHelper(this.getContext());
         SQLiteDatabase db = ventasDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -234,22 +230,23 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
 
         if(strMsgValidacion.equalsIgnoreCase("")) {
             //si pasa las validaciones nos e manda mensaje
-            //values.put(VentasContract.VentasEntry.IdVentas, 5);
+            values.put(VentasContract.VentasEntry.IdApertura, 1);
             values.put(VentasContract.VentasEntry.IdProducto, gloIdProducto);
-            values.put(VentasContract.VentasEntry.Producto, gloProducto);
             values.put(VentasContract.VentasEntry.Cantidad, edtxtCantidad.getText().toString());
-            values.put(VentasContract.VentasEntry.Precio, edtxtTotal.getText().toString());
-            values.put(VentasContract.VentasEntry.Costo, 30);
+            values.put(VentasContract.VentasEntry.Precio, edtxtPrecio.getText().toString());
+            values.put(VentasContract.VentasEntry.Descuento, edtxtDescuento.getText().toString());
+            values.put(VentasContract.VentasEntry.Total, edtxtTotal.getText().toString());
+
 
             try {
                 if(pgloIdVentas == 0){
-                    Long resInsert = db.insert(VentasContract.VentasEntry.TABLE_NAME, null, values);
+                    long resInsert = db.insert(VentasContract.VentasEntry.TABLE_NAME_MOVIMIENTO, null, values);
                     if (resInsert > 0) {
                         Toast.makeText(getContext(), "Movimiento registrado.", Toast.LENGTH_SHORT).show();
                         goToListMovimiento();
                     }
                 }else{
-                    int resUpd = db.update(VentasContract.VentasEntry.TABLE_NAME,values,
+                    int resUpd = db.update(VentasContract.VentasEntry.TABLE_NAME_MOVIMIENTO,values,
                             "IdVentas=?",
                             new String[]{ String.valueOf(pgloIdVentas) }
                             );
@@ -293,23 +290,31 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
         List<Producto> olstProducto = new ArrayList<Producto>();
         Producto oProd;
         VentasDbHelper ventasDbHelper = new VentasDbHelper(getContext());
-        SQLiteDatabase db = ventasDbHelper.getReadableDatabase();
-        Cursor curProd = db.rawQuery("Select IdProducto, NombreProducto, PrecioProducto from Producto",
-                null);
 
-        if( curProd.moveToFirst() ) {
-            do {
-                oProd = new Producto();
-                oProd.setIdProducto(curProd.getInt(curProd.getColumnIndex("IdProducto")));
-                oProd.setNombreProducto(curProd.getString(curProd.getColumnIndex("NombreProducto")));
-                oProd.setPrecioProducto( curProd.getFloat(curProd.getColumnIndex("PrecioProducto")) );
-                if(pgloIdProducto == oProd.getIdProducto()){
-                    pgloPostionProducto = curProd.getPosition();
-                }
-                olstProducto.add(oProd);
-            } while (curProd.moveToNext());
+        SQLiteDatabase db = ventasDbHelper.getReadableDatabase();
+        try {
+            Cursor curProd = db.rawQuery("Select IdProducto, NombreProducto, PrecioProducto from Producto",
+                    null);
+
+            if (curProd.moveToFirst()) {
+                do {
+                    oProd = new Producto();
+                    oProd.setIdProducto(curProd.getInt(curProd.getColumnIndex("IdProducto")));
+                    oProd.setNombreProducto(curProd.getString(curProd.getColumnIndex("NombreProducto")));
+                    oProd.setPrecioProducto(curProd.getFloat(curProd.getColumnIndex("PrecioProducto")));
+                    if (pgloIdProducto == oProd.getIdProducto()) {
+                        pgloPostionProducto = curProd.getPosition();
+                    }
+                    olstProducto.add(oProd);
+                } while (curProd.moveToNext());
+            }
+        }catch(Exception ex){
+                ex.printStackTrace();
+        }finally{
+            db.close();
         }
-        db.close();
+
+
 
         return  olstProducto;
     }

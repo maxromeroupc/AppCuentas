@@ -5,23 +5,21 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.textclassifier.TextClassification;
 import android.widget.TextView;
 
+import com.example.appcuentas.Adaptadores.MyMovimientoRecyclerViewAdapter;
 import com.example.appcuentas.Datos.VentasDbHelper;
-import com.example.appcuentas.Entidades.Ventas;
-import com.example.appcuentas.dummy.DummyContent;
+import com.example.appcuentas.Entidades.Movimiento;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -59,9 +57,6 @@ public class ListarMovimientoFragment extends Fragment {
     @SuppressWarnings("unused")
     public static ListarMovimientoFragment newInstance(int columnCount) {
         ListarMovimientoFragment fragment = new ListarMovimientoFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -69,9 +64,6 @@ public class ListarMovimientoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
     }
 
     @Override
@@ -80,24 +72,13 @@ public class ListarMovimientoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_movimiento_list, container, false);
 
         txtResumen = view.findViewById(R.id.txtResumen);
-
-        recListMov = view.findViewById(R.id.recListMov);
-        recListMov.setLayoutManager(new GridLayoutManager(getContext(),1) );
-        List<Ventas> listMovAdap = listarMovimientos();
-        recListMov.setAdapter(new MyMovimientoRecyclerViewAdapter(listMovAdap, mListener));
-
+        recListMov = view.findViewById(R.id.recListMovement);
         fabAddMov= view.findViewById(R.id.fabAddMov);
-        fabAddMov.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RegistrarMovimientoFragment regMovFragment =  new RegistrarMovimientoFragment();
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.ContentFrame,regMovFragment).commit();
-            }
-        });
 
-        //Seteando Valores
+
+        //Set Values
+        setListMovement();
+        setListenerFabActionButton();
         setValues();
 
         return view;
@@ -137,33 +118,61 @@ public class ListarMovimientoFragment extends Fragment {
         void onRefresh(int pOpcion);
     }
 
-    //region Procedimientos y Metodos
-    List<Ventas> listarMovimientos(){
-        Ventas oVentas;
-        VentasDbHelper ventasDbHelper = new VentasDbHelper(getContext());
+    //region Procedures y Functions
+
+    private void setListenerFabActionButton(){
+        fabAddMov.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RegistrarMovimientoFragment regMovFragment =  new RegistrarMovimientoFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.ContentFrame,regMovFragment).commit();
+            }
+        });
+    }
+
+    private void setListMovement(){
+        recListMov.setLayoutManager(new LinearLayoutManager(getContext()) );
+        List<Movimiento> listMovAdapter = listarMovimientos();
+        recListMov.setAdapter(new MyMovimientoRecyclerViewAdapter(listMovAdapter, mListener));
+    }
+
+
+    private List<Movimiento> listarMovimientos(){
+        Movimiento oMovimiento;
+        VentasDbHelper ventasDbHelper = new VentasDbHelper(this.getContext());
         SQLiteDatabase db = ventasDbHelper.getReadableDatabase();
-        Cursor curListMov =
-                db.rawQuery("select IdVentas,IdProducto,Producto,Cantidad,Precio,Costo from Ventas",
-                        null);
+        try {
+            Cursor curListMov =
+                    db.rawQuery("select IdMovimiento,v.IdProducto, NombreProducto,v.Cantidad,v.Precio," +
+                                    "v.Descuento, v.Total from Movimiento v" +
+                                    " inner join Producto p on p.IdProducto = v.IdProducto",
+                            null);
 
-        if(curListMov.moveToFirst()){
-            do{
-                oVentas = new Ventas();
-                oVentas.setIdVentas(curListMov.getInt(curListMov.getColumnIndex("IdVentas")));
-                oVentas.setProducto(curListMov.getString(curListMov.getColumnIndex("Producto")));
-                oVentas.setPrecio(curListMov.getFloat(curListMov.getColumnIndex("Precio")));
-                vgloCantidadTotalMov = vgloCantidadTotalMov + 1;
-                vgloTotalMov = vgloTotalMov + oVentas.getPrecio();
-                listMov.add(oVentas);
-            }while(curListMov.moveToNext());
+            if(curListMov.moveToFirst()){
+                do{
+                    oMovimiento = new Movimiento();
+                    oMovimiento.setIdMovimiento(curListMov.getInt(curListMov.getColumnIndex("IdMovimiento")));
+                    oMovimiento.setProducto(curListMov.getString(curListMov.getColumnIndex("NombreProducto")));
+                    oMovimiento.setTotal(curListMov.getFloat(curListMov.getColumnIndex("Total")));
+                    vgloCantidadTotalMov = vgloCantidadTotalMov + 1;
+                    vgloTotalMov = vgloTotalMov + oMovimiento.getPrecio();
+                    listMov.add(oMovimiento);
+                }while(curListMov.moveToNext());
 
-        }else{
-            oVentas = new Ventas();
-            oVentas.setIdProducto(0);
-            oVentas.setProducto("Sin Movimientos");
-            listMov.add(oVentas);
+            }else{
+                oMovimiento = new Movimiento();
+                oMovimiento.setIdProducto(0);
+                oMovimiento.setProducto("Sin Movimientos");
+                listMov.add(oMovimiento);
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
-        db.close();
+        finally{
+            db.close();
+        }
         return listMov;
     }
 

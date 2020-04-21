@@ -2,19 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:id="@+id/ListMovement"
+        android:icon="@drawable/sale_icon_red_48"
+        android:title="Ventas"
+        app:showAsAction="always"></item>
+
 
     <item
-        android:id="@+id/Listar"
-        android:icon="@drawable/checklist_icon"
-        android:title="List"
+        android:id="@+id/ListProducts"
+        android:icon="@drawable/product_icon_red_48"
+        android:title="Productos"
         app:showAsAction="always"></item>
+
     <item
-        android:id="@+id/ListMovimiento"
-        android:icon="@drawable/mov_icon"
-        android:title="List Movimiento"
+        android:id="@+id/ListAperture"
+        android:title="Aperturas"
+        android:icon="@drawable/cash_icon_48"
         app:showAsAction="always"></item>
-    <item
-        android:id="@+id/Modificar"
-        android:title="Upd"
-        app:showAsAction="never"></item>
 </menu>

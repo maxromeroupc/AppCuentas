@@ -15,48 +15,56 @@
         android:layout_marginTop="10dp"
         android:orientation="vertical">
 
+
         <TextView
             android:id="@+id/lblTitRegMov"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:text="@string/lblTitRegistrarMovimiento"
             android:textAlignment="center"
+            android:textColor="@color/colorPrimaryDark"
+
             android:textSize="20dp"
             android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/txtSeparador"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/separador_title" />
 
         <TextView
             android:id="@+id/lblProducto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/lblProducto">
+            android:text="@string/lblProducto"
+            android:textColor="@color/colorBlack"
+            >
 
         </TextView>
 
         <Spinner
             android:id="@+id/spnProducto"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/edtxtProducto"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Producto"
-            android:inputType="textPersonName"
-            android:visibility="gone" />
+            android:layout_marginBottom="10dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/lblPrecio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/lblPrecio" />
+                android:text="@string/lblPrecio"
+                android:textColor="@color/colorBlack"
+                />
 
             <EditText
                 android:id="@+id/edtxtPrecio"
@@ -71,7 +79,9 @@
                 android:id="@+id/lblCantidad"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/lblCantidad" />
+                android:text="@string/lblCantidad"
+                android:textColor="@color/colorBlack"
+                />
 
             <EditText
                 android:id="@+id/edtxtCantidad"
@@ -87,13 +97,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/lblDescuento"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/descuento" />
+                android:text="@string/descuento"
+                android:textColor="@color/colorBlack"
+                />
 
             <EditText
                 android:id="@+id/edtxtDescuento"
@@ -108,7 +121,9 @@
                 android:id="@+id/lbltotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/total" />
+                android:text="@string/total"
+                android:textColor="@color/colorBlack"
+                />
 
             <EditText
                 android:id="@+id/edtxtTotal"
@@ -130,34 +145,37 @@
                 android:id="@+id/btnGuardar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="100dp"
-                android:layout_marginLeft="100dp"
+                android:layout_marginStart="44dp"
+                android:layout_marginLeft="44dp"
                 android:layout_marginTop="30dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
                 android:layout_marginBottom="20dp"
                 android:layout_weight="2"
-                android:src="@drawable/save_icon_blue"
+                android:background="@drawable/btn_save"
+                android:scaleType="centerInside"
+                android:src="@drawable/btn_save"
                 android:text="@string/btnGuardar"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/ibtnCancel"
+                app:layout_constraintHorizontal_bias="0.087"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"></ImageButton>
+                app:layout_constraintVertical_bias="1.0"></ImageButton>
 
             <ImageButton
                 android:id="@+id/ibtnCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:layout_marginEnd="100dp"
-                android:layout_marginRight="100dp"
+                android:layout_marginEnd="44dp"
+                android:layout_marginRight="44dp"
                 android:layout_marginBottom="20dp"
                 android:layout_weight="2"
-                android:src="@android:drawable/ic_delete"
+                android:src="@drawable/btn_cancel"
+                android:background="@drawable/btn_cancel"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"></ImageButton>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0"></ImageButton>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

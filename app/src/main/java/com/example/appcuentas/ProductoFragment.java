@@ -11,16 +11,24 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.appcuentas.Adaptadores.MyProductoRecyclerViewAdapter;
 import com.example.appcuentas.Datos.VentasContract;
 import com.example.appcuentas.Datos.VentasDbHelper;
 import com.example.appcuentas.Entidades.Producto;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,6 +137,8 @@ public class ProductoFragment extends Fragment {
         //mListener = null;
     }
 
+
+
     //region Procedimientos y Mètodos
     void listarProductos(){
         VentasDbHelper ventasDbHelper= new VentasDbHelper(getContext());
@@ -152,16 +162,73 @@ public class ProductoFragment extends Fragment {
                 listProducto.add(oProd);
             }while(curProductos.moveToNext());
         }
-        //Log.e("Mensaje","Cantidad :" + listProducto.size());
+        Log.e("Mensaje","Cantidad :" + getContext().getDatabasePath("Movimiento.db").getAbsolutePath() );
 
+        //copyDB();
     }
 
     private void setValues(){
         txtResumen.setText( "Cantidad :" + String.valueOf(vgloCantidad) );
     }
 
-     //endregion
+    private void copyDB(){
+        String rutaDB = getContext().getDatabasePath("Movimiento.db").getAbsolutePath();
+        File filDB = new File(rutaDB);
+        File storageDB = getActivity().getExternalFilesDir( Environment.DIRECTORY_PICTURES);
+        String path = storageDB.getAbsolutePath() + "/VentasBkp.db";
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            fis = new FileInputStream(filDB);
+            fos = new FileOutputStream(path);
+            while(true){
+                int i = fis.read();
+                if( i != -1){
+                           fos.write(i);
+                }else{break;}
+            }
+            fos.flush();
 
+        }catch (IOException ex) {
+            Toast.makeText(this.getContext(),"Erro",Toast.LENGTH_SHORT).show();
+        }
+        finally {
+            try {
+                fos.close();
+                fis.close();
+            }catch (IOException ex){}
+        }
+
+
+    }
+
+     //endregion
+/*
+    File f=new File("/data/data/your.app.package/databases/your_db.db3");
+    FileInputStream fis=null;
+    FileOutputStream fos=null;
+    try {
+        fis=new FileInputStream(f);
+        fos=new FileOutputStream("/mnt/sdcard/db_dump.db");
+
+        while(true) {
+            int i=fis.read();
+            if(i!=-1) {fos.write(i);} else {break;}
+
+        }
+
+        fos.flush();
+        Toast.makeText(this, "DB dump OK", Toast.LENGTH_LONG).show();
+    }
+    catch(Exception e) {
+        e.printStackTrace();
+        Toast.makeText(this, "DB dump ERROR", Toast.LENGTH_LONG).show();
+    }
+    finally {
+        try { fos.close(); fis.close(); } catch(IOException ioe) {}
+    }
+
+    */
 
     /**
      * This interface must be implemented by activities that contain this

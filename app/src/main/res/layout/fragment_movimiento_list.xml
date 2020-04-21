@@ -10,18 +10,25 @@
     >
 
         <TextView
-            android:id="@+id/txtTitleMovimiento"
+            android:id="@+id/txtTitleMovement"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:text="@string/listado_de_movimientos"
+            android:textColor="@color/colorPrimaryDark"
             android:textAlignment="center"
             android:textSize="20dp"
-
             android:textStyle="bold"
             android:layout_marginTop="10dp" />
 
-    <ScrollView
+        <TextView
+            android:id="@+id/txtSeparador2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/separador_title" />
+
+        <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
@@ -33,7 +40,7 @@
 
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recListMov"
+                android:id="@+id/recListMovement"
                 android:name="com.example.appcuentas.ListarMovimientoFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

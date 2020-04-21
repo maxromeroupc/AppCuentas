@@ -1,46 +1,52 @@
 package com.example.appcuentas;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.DialogCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.appcuentas.Datos.VentasContract;
 import com.example.appcuentas.Datos.VentasDbHelper;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {// @link RegistrarProductoFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RegistrarProductoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class RegistrarProductoFragment extends Fragment implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     //private OnFragmentInteractionListener mListener;
 
@@ -48,40 +54,23 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RegistrarProductoFragment.
-     */
     //region variables globales
     private EditText edtxtNombreProducto,edtxtDescripcionProducto,edtxtPrecioProducto
             ,edtxtCostoProducto, edtxtCantidadProducto;
 
-    private ImageButton ibtnGuardarProducto, ibtnCancel;
+    private ImageButton ibtnGuardarProducto, ibtnCancel, imgbFindPhoto;
     private String vStrIdProducto;
     private TextView txtTitleRegProduct;
+    private ImageView imgPhoto;
 
      //endregion
 
-    // TODO: Rename and change types and number of parameters
-    public static RegistrarProductoFragment newInstance(String param1, String param2) {
-        RegistrarProductoFragment fragment = new RegistrarProductoFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
             vStrIdProducto = getArguments().getString("IdProductoKey");
         }
     }
@@ -92,23 +81,28 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
         // Inflate the layout for this fragment
         View view =inflater.inflate(R.layout.fragment_registrar_producto, container, false);
 
-        edtxtNombreProducto = (EditText) view.findViewById(R.id.edtxtNombreProducto);
-        edtxtDescripcionProducto= (EditText) view.findViewById(R.id.edtxtDescripcionProducto);
-        edtxtPrecioProducto= (EditText) view.findViewById(R.id.edtxtPrecioProducto);
-        edtxtCostoProducto= (EditText) view.findViewById(R.id.edtxtCostoProducto);
-        edtxtCantidadProducto= (EditText) view.findViewById(R.id.edtxtCantidadProducto);
+        edtxtNombreProducto =  view.findViewById(R.id.edtxtNombreProducto);
+        edtxtDescripcionProducto=  view.findViewById(R.id.edtxtDescripcionProducto);
+        edtxtPrecioProducto=  view.findViewById(R.id.edtxtPrecioProducto);
+        edtxtCostoProducto=  view.findViewById(R.id.edtxtCostoProducto);
+        edtxtCantidadProducto=  view.findViewById(R.id.edtxtCantidadProducto);
 
-        ibtnGuardarProducto = (ImageButton) view.findViewById( R.id.ibtGuardar );
+        ibtnGuardarProducto = view.findViewById( R.id.ibtGuardar );
         ibtnCancel = view.findViewById(R.id.ibtnCancel);
+        imgbFindPhoto = view.findViewById(R.id.imgbFindPhoto);
 
         ibtnGuardarProducto.setOnClickListener(this);
         ibtnCancel.setOnClickListener(this);
+        imgbFindPhoto.setOnClickListener(this);
+        imgPhoto = view.findViewById(R.id.imgPhoto);
+
 
 
 
         edtxtNombreProducto.setText(vStrIdProducto);
 
         txtTitleRegProduct = (TextView) view.findViewById(R.id.txtTitleRegistrar);
+
 
         if(vStrIdProducto != null) {
             if (!vStrIdProducto.equalsIgnoreCase("")) {
@@ -121,30 +115,17 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
-        /*
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-         */
+
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        /*
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-         */
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        //mListener = null;
     }
 
     @Override
@@ -166,8 +147,43 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.ContentFrame,productoFragmentlist).commit();
                 break;
+            case R.id.imgbFindPhoto:
+                openCamara();
+                break;
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode ) {
+            case INTENT_REQUEST_CAMARA :
+                if( grantResults.length >= 0  && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    openCamara();
+                }
+                break;
+        }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case INTENT_CAMARA:
+                edtxtCantidadProducto.setText(currentPhotoPath);
+                //Bundle bundle = data.getExtras();
+                //Bitmap photo = (Bitmap) bundle.get("data");
+                File f = new File(currentPhotoPath);
+                Uri utiPhoto = Uri.fromFile(f);
+                imgPhoto.setImageURI(utiPhoto);
+                //savePhoto(photo);
+                break;
+        }
+    }
+
+
 
     //region Procedimientos
 
@@ -217,7 +233,7 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
         return vStrRes;
     }
 
-    void listarProductos(){
+    private void listarProductos(){
         VentasDbHelper ventasDbHelper = new VentasDbHelper(getContext());
         SQLiteDatabase db = ventasDbHelper.getReadableDatabase();
         Cursor curEdit = db.query(VentasContract.VentasEntry.TABLE_NAME_PRODUCTO,
@@ -282,7 +298,7 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
         return vIntValor;
     }
 
-    void goListProduct(){
+    private void goListProduct(){
         ProductoFragment productoFragment = new ProductoFragment();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -291,21 +307,80 @@ public class RegistrarProductoFragment extends Fragment implements View.OnClickL
 
     //endregion
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    /*
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
+    //region Los metodos para la foto fueron comentados porque no aplica a este nivel
+    //Se ocultaron los controles en la vista frag_registrar_producto
+
+    //Globales para uso camara
+    String currentPhotoPath;
+
+    static final int INTENT_REQUEST_CAMARA = 100;
+    static final int INTENT_CAMARA = 101;
+
+
+    private void openCamara()
+    {
+
+        if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+        {
+            {
+                AlertDialog.Builder alertPermiso = new AlertDialog.Builder(this.getContext());
+                alertPermiso.setTitle("Permisos camara")
+                        .setMessage("Se requiere usar la camara")
+                        .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                permissionCamara();
+                            }
+                        })
+                        .setNegativeButton("No",null);
+
+                alertPermiso.show();
+
+            }
+        }else
+        {
+            Intent intentCamara = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if(intentCamara.resolveActivity( this.getActivity().getPackageManager() ) != null)
+            {
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                }catch(IOException ex){
+                    ex.printStackTrace();
+                }
+                if(photoFile != null) {
+                    Uri photoUri = FileProvider.getUriForFile(this.getContext(),
+                            "com.example.android.fileprovider2",
+                            photoFile);
+                    intentCamara.putExtra(MediaStore.EXTRA_OUTPUT ,photoUri);
+                    startActivityForResult(intentCamara,INTENT_CAMARA);
+                }
+            }
+
+        }
+
     }
 
-     */
+    private void permissionCamara(){
+        requestPermissions( new String[]{Manifest.permission.CAMERA},INTENT_REQUEST_CAMARA );
+        //ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA} ,REQ_CAMARA_PERM);
+    }
+
+    private File createImageFile() throws IOException {
+        String timesStamp = new SimpleDateFormat("yyyyMMss_HHmmss").format(new Date());
+        String imageFileName = "JPEG_"  + timesStamp + "_";
+        File storageDir = this.getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    //endregion
+
 }

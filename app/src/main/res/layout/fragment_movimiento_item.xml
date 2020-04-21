@@ -31,19 +31,32 @@
         android:layout_margin="5dp"
         android:layout_weight="1"
         android:hint="Precio"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/txtTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:hint="Total" />
 
     <ImageButton
         android:id="@+id/ibtnEditMov"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/edit_icon_blue"
         android:src="@drawable/edit_icon_blue"></ImageButton>
 
     <ImageButton
         android:id="@+id/ibtnDelMov"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/delete_icon_blue_cross">
+        android:background="@drawable/trash_icon_red_24"
+        android:src="@drawable/trash_icon_red_24"
+        >
 
     </ImageButton>
 

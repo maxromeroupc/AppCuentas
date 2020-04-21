@@ -1,33 +1,33 @@
 package com.example.appcuentas.Entidades;
 
-public class Ventas {
+public class Movimiento {
 
-    private int idVentas;
+    private int idMovimiento;
     private int idProducto;
     private String producto;
     private int cantidad;
     private float precio;
-    private float costo;
+    private float total;
 
-    public Ventas(){
+    public Movimiento(){
 
     }
 
-    public Ventas(int idVentas, int idProducto, String producto, int cantidad, float precio, float costo) {
-        this.idVentas = idVentas;
+    public Movimiento(int idMovimiento, int idProducto, String producto, int cantidad, float precio, float costo) {
+        this.idMovimiento = idMovimiento;
         this.idProducto = idProducto;
         this.producto = producto;
         this.cantidad = cantidad;
         this.precio = precio;
-        this.costo = costo;
+        this.total = costo;
     }
 
-    public int getIdVentas() {
-        return idVentas;
+    public int getIdMovimiento() {
+        return idMovimiento;
     }
 
-    public void setIdVentas(int idVentas) {
-        this.idVentas = idVentas;
+    public void setIdMovimiento(int idMovimiento) {
+        this.idMovimiento = idMovimiento;
     }
 
     public int getIdProducto() {
@@ -62,11 +62,11 @@ public class Ventas {
         this.precio = precio;
     }
 
-    public float getCosto() {
-        return costo;
+    public float getTotal() {
+        return total;
     }
 
-    public void setCosto(float costo) {
-        this.costo = costo;
+    public void setTotal(float total) {
+        this.total = total;
     }
 }

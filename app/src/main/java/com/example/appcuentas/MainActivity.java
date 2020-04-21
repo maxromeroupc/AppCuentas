@@ -8,94 +8,77 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.Menu;
-///import android.widget.Toolbar;
-import android.support.v4.app.*;
+
 import android.view.MenuItem;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 public class MainActivity
         extends AppCompatActivity
-        implements ProductoFragment.OnListFragmentInteractionListener,
-                    ListarMovimientoFragment.OnListFragmentInteractionListener{
+            implements ProductoFragment.OnListFragmentInteractionListener,
+                ListarMovimientoFragment.OnListFragmentInteractionListener,
+                BottomNavigationView.OnNavigationItemSelectedListener {
 
     //region Variables Globales
     FragmentManager fragmentManager = getSupportFragmentManager();
     private Toolbar toolbar;
+    private BottomNavigationView btnNavMenu;
     //endregion
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+        toolbar = findViewById(R.id.toolbar);
+        btnNavMenu = findViewById(R.id.btnNavMenu);
+
+        btnNavMenu.setOnNavigationItemSelectedListener(this);
 
         //Pantalla inicial
-        ListarMovimientoFragment listarMovimientoFragment = new ListarMovimientoFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.ContentFrame,listarMovimientoFragment).commit();
-
+        goToMovement();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //return super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.menu,menu);
-        return true;
+        return false;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         //return super.onOptionsItemSelected(item);
-        FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
+        return false;
+    }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()){
+            case R.id.ListProducts:
+                goToProduct();
+                break;
+            case R.id.ListMovement:
+                goToMovement();
+                break;
+            case R.id.ListAperture:
+                goToAperture();
+                break;
 
-            case R.id.Listar:
-                ProductoFragment productoFragment = new ProductoFragment();
-                fragmentTransaction.replace(R.id.ContentFrame,productoFragment).commit();
-                //fragmentTransaction.add(R.id.ContentFrame,productoFragment).commit();
-                break;
-            case R.id.ListMovimiento:
-                ListarMovimientoFragment listarMovimientoFragment = new ListarMovimientoFragment();
-                fragmentTransaction.replace(R.id.ContentFrame,listarMovimientoFragment).commit();
-                break;
-            case android.R.id.home:
-                ProductoFragment productoFragmentlist = new ProductoFragment();
-                fragmentTransaction.replace(R.id.ContentFrame,productoFragmentlist).commit();
-
-                break;
         }
-
         return true;
     }
 
 
-    @Override
-    public void onListFragmentInteraction(String IdProducto) {
-        RegistrarProductoFragment registrarProductoFragment = new RegistrarProductoFragment();
-        Bundle args = new Bundle();
-        args.putString("IdProductoKey",IdProducto);
-        registrarProductoFragment.setArguments(args);
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.ContentFrame,registrarProductoFragment).commit();
-    }
 
     @Override
     public void onRefresh(int pOpcion) {
         switch(pOpcion){
             case 1:
-                ProductoFragment productoFragmentlist = new ProductoFragment();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.ContentFrame,productoFragmentlist).commit();
+                goToProduct();
                 break;
 
             case 2:
-                ListarMovimientoFragment moviFragmentlist = new ListarMovimientoFragment();
-                FragmentTransaction fragmentTransactionMov = fragmentManager.beginTransaction();
-                fragmentTransactionMov.replace(R.id.ContentFrame,moviFragmentlist).commit();
+                goToMovement();
                 break;
 
         }
@@ -111,5 +94,36 @@ public class MainActivity
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.ContentFrame,regMovFrag).commit();
     }
+
+    @Override
+    public void onListFragmentInteraction(String IdProducto) {
+        RegistrarProductoFragment registrarProductoFragment = new RegistrarProductoFragment();
+        Bundle args = new Bundle();
+        args.putString("IdProductoKey",IdProducto);
+        registrarProductoFragment.setArguments(args);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.ContentFrame,registrarProductoFragment).commit();
+    }
+
+
+    //Functions and Procedures
+    private void goToMovement(){
+        ListarMovimientoFragment listarMovimientoFragment = new ListarMovimientoFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.ContentFrame,listarMovimientoFragment).commit();
+    }
+
+    private void goToProduct(){
+        ProductoFragment productoFragmentlist = new ProductoFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.ContentFrame,productoFragmentlist).commit();
+    }
+
+    private void goToAperture(){
+        ListApertureFragment listApertureFragment = new ListApertureFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace( R.id.ContentFrame, listApertureFragment ).commit();
+    }
+
 }
 

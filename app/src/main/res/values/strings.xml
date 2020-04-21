@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AppCuentas</string>
+    <string name="app_name">App Cuentas</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -23,5 +23,10 @@
     <string name="Prod_cantidad">Cantidad</string>
     <string name="prod_precio">Precio</string>
     <string name="prod_costo">Costo</string>
+    <string name="apert_title_listado_de_aperturas">Listado de Aperturas</string>
+    <string name="apert_fecha_inicio_apertura">Fecha Inicio Apertura</string>
+    <string name="apert_estado_apertura">Estado Apertura</string>
+    <string name="apert_sincronizado">Sincronizado</string>
+    <string name="apert_estado">Estado</string>
 
 </resources>
