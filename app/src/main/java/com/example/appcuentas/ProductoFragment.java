@@ -162,7 +162,7 @@ public class ProductoFragment extends Fragment {
                 listProducto.add(oProd);
             }while(curProductos.moveToNext());
         }
-        Log.e("Mensaje","Cantidad :" + getContext().getDatabasePath("Movimiento.db").getAbsolutePath() );
+        //Log.e("Mensaje","Cantidad :" + getContext().getDatabasePath("Movimiento.db").getAbsolutePath() );
 
         //copyDB();
     }
