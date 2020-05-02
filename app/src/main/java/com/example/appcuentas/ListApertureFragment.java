@@ -17,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.appcuentas.Adaptadores.ApertureViewAdapter;
 import com.example.appcuentas.Datos.VentasDbHelper;
@@ -37,6 +39,8 @@ public class ListApertureFragment extends Fragment {
 
     private RecyclerView recListAperture;
     private FloatingActionButton fabAddAperture;
+    private int vgloCantidadAperturas = 0;
+    private TextView txtAperturaResumen;
 
 
     public ListApertureFragment() {
@@ -51,22 +55,64 @@ public class ListApertureFragment extends Fragment {
 
         recListAperture = view.findViewById(R.id.recListAperture);
         fabAddAperture =  view.findViewById(R.id.fabAddAperture);
+        txtAperturaResumen = view.findViewById(R.id.txtAperturaResumen);
 
         setRecListAperture();
         setListenerFabActionButton();
-
+        setDefaultValues();
         return view;
     }
 
-
     //region Prodecures and functions
+
+    private void setDefaultValues() {
+        txtAperturaResumen.setText( "Cantidad : " +String.valueOf(vgloCantidadAperturas));
+    }
 
     private void setRecListAperture(){
         recListAperture.setLayoutManager( new LinearLayoutManager( getContext() ));
-        List<Apertura> lstApertu = listAperture() ;
-        ApertureViewAdapter adapter = new ApertureViewAdapter(lstApertu);
+        final List<Apertura> lstApertu = listAperture() ;
+        vgloCantidadAperturas = lstApertu.size() ;
+        ApertureViewAdapter adapter = new ApertureViewAdapter(lstApertu, this);
+
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int idApertura = 0;
+                idApertura = lstApertu.get( recListAperture.getChildAdapterPosition(v) ).getIdApertura();
+                goToListMovement(idApertura);
+                //Toast.makeText(getContext(),"Click sobre el rec : " + idApertura, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         recListAperture.setAdapter(adapter);
     }
+
+    public void goToEdit(int IdAperture){
+        RegistrarApertureFragment regMovAperture =  new RegistrarApertureFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Bundle bundle = new Bundle();
+        bundle.putString("option","2");
+        bundle.putInt("IdAperture",IdAperture);
+        regMovAperture.setArguments(bundle);
+        fragmentTransaction.replace(R.id.ContentFrame,regMovAperture).commit();
+    }
+
+    private void goToListMovement(int idApertura){
+        ListarMovimientoFragment listarMovimientoFragment = new ListarMovimientoFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Bundle b = new Bundle();
+        b.putInt("idApertura",idApertura);
+        listarMovimientoFragment.setArguments(b);
+        fragmentTransaction.replace(R.id.ContentFrame, listarMovimientoFragment).commit();
+    }
+
+    public void onRefreshFromDelete(){
+        setRecListAperture();
+    }
+
 
     private void setListenerFabActionButton(){
         fabAddAperture.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +121,9 @@ public class ListApertureFragment extends Fragment {
                 RegistrarApertureFragment regMovAperture =  new RegistrarApertureFragment();
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                Bundle bundle = new Bundle();
+                bundle.putString("option","1");
+                regMovAperture.setArguments(bundle);
                 fragmentTransaction.replace(R.id.ContentFrame,regMovAperture).commit();
             }
         });
@@ -100,6 +149,7 @@ public class ListApertureFragment extends Fragment {
                     oApertura.setEstadoApertura( curAperture.getInt( curAperture.getColumnIndex("EstadoApertura")  ) );
                     oApertura.setSincronizado( curAperture.getInt( curAperture.getColumnIndex("Sincronizado")  ) );
                     lstAperture.add(oApertura);
+
                 }while(curAperture.moveToNext());
 
             }else{
@@ -108,18 +158,7 @@ public class ListApertureFragment extends Fragment {
                 oApertura.setEstadoApertura(0);
                 lstAperture.add(oApertura);
             }
-            /*
-            if(curAperture.isFirst()){
-                while(curAperture.moveToNext()){
-                    oApertura = new Apertura();
-                    oApertura.setIdApertura( curAperture.getInt( curAperture.getColumnIndex("IdApertura")  ) );
-                    //oApertura.setFechaInicioApertura( curAperture.getString( curAperture.getColumnIndex("FechaInicioApertura")  ) );
-                    oApertura.setEstadoApertura( curAperture.getInt( curAperture.getColumnIndex("EstadoApertura")  ) );
-                    oApertura.setSincronizado( curAperture.getInt( curAperture.getColumnIndex("Sincronizado")  ) );
-                    lstAperture.add(oApertura);
-                }
-            }
-            */
+
 
 
         }catch(Exception ex){

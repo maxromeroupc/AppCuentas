@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:hint="idAperture"
+            android:hint="idApert"
             android:textAppearance="?attr/textAppearanceListItem" />
 
         <TextView
@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="2"
-            android:hint="FechaInicioApertura"
+            android:hint="FechaIniAper"
             android:textAppearance="?attr/textAppearanceListItem" />
 
         <TextView
@@ -43,7 +43,7 @@
             android:layout_weight="1"
             android:layout_margin="5dp"
             android:textAppearance="?attr/textAppearanceListItem"
-            android:hint="Sincronizado" />
+            android:hint="Sincro" />
 
         <ImageButton
             android:id="@+id/ibtnEditAperture"

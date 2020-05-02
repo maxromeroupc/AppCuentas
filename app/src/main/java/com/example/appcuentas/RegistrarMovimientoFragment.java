@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.appcuentas.Adaptadores.ApertureViewAdapter;
 import com.example.appcuentas.Datos.VentasContract;
 import com.example.appcuentas.Datos.VentasDbHelper;
 import com.example.appcuentas.Entidades.Producto;
@@ -51,7 +52,7 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
 
     //Var globales
     private EditText edtxtPrecio,edtxtCantidad,
-        edtxtDescuento, edtxtTotal;
+        edtxtDescuento, edtxtTotal, edtxtIdApertura;
     private TextView txtTitleRegMov;
     private ImageButton btnGuardar, ibtnCancel;
     private Spinner spnProducto;
@@ -59,7 +60,7 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
     private float floPre =0, floCan=0, floDesc=0;
     private int gloIdProducto = 0;
 
-    private int pgloIdVentas = 0; //Se usa para determinar si se va a Editar el registro o crear 1 nuevo, si es diferente de 0 es una edición
+    private int pgloIdVentas = 0, pgloIdApertura = 0; //Se usa para determinar si se va a Editar el registro o crear 1 nuevo, si es diferente de 0 es una edición
     private int pgloIdProducto = 0, pgloPostionProducto=0;
 
 
@@ -79,6 +80,7 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
         edtxtDescuento = view.findViewById(R.id.edtxtDescuento);
         edtxtTotal = view.findViewById(R.id.edtxtTotal);
         txtTitleRegMov = view.findViewById(R.id.lblTitRegMov);
+        edtxtIdApertura = view.findViewById(R.id.edtxtIdAperture);
 
         btnGuardar= view.findViewById(R.id.btnGuardar);
         ibtnCancel = view.findViewById(R.id.ibtnCancel);
@@ -230,7 +232,7 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
 
         if(strMsgValidacion.equalsIgnoreCase("")) {
             //si pasa las validaciones nos e manda mensaje
-            values.put(VentasContract.VentasEntry.IdApertura, 1);
+            values.put(VentasContract.VentasEntry.IdApertura, pgloIdApertura);
             values.put(VentasContract.VentasEntry.IdProducto, gloIdProducto);
             values.put(VentasContract.VentasEntry.Cantidad, edtxtCantidad.getText().toString());
             values.put(VentasContract.VentasEntry.Precio, edtxtPrecio.getText().toString());
@@ -320,36 +322,77 @@ public class RegistrarMovimientoFragment extends Fragment implements View.OnClic
     }
 
     private void setDefaultValues(){
+
         if(pgloIdVentas != 0){
+            //modificar
             txtTitleRegMov.setText("Modificar Movimiento");
             listMovimiento( pgloIdVentas );
             edtxtDescuento.setText("0");
+
         }else{
+            //nuevo registro
+            setearApertura();
             edtxtDescuento.setText("0");
             edtxtCantidad.setText("1");
 
         }
-
-
-
     }
 
     private void listMovimiento(int pIdVentas){
         VentasDbHelper ventasDbHelper = new VentasDbHelper(getContext());
         SQLiteDatabase db = ventasDbHelper.getReadableDatabase();
-        Cursor curMov = db.rawQuery("Select * from Ventas where IdVentas=?",
+        Cursor curMov = db.rawQuery("Select * from Movimiento where IdMovimiento=?",
                 new String[]{ String.valueOf( pIdVentas) });
 
         //Log.e("Msg Movimiento",String.valueOf( curMov.getCount() ));
-
+    try {
         if(curMov.moveToFirst()){
+            int IdApertura = curMov.getInt(curMov.getColumnIndex("IdApertura"));
+            edtxtIdApertura.setText(String.valueOf(IdApertura));
             //edtxtPrecio.setText( curMov.getInt( curMov.getColumnIndex("Precio") ) );
             edtxtCantidad.setText( String.valueOf( curMov.getInt( curMov.getColumnIndex("Cantidad") ) ));
             //edtxtDescuento.setText( curMov.getInt( curMov.getColumnIndex("Descuento") ) );
             edtxtTotal.setText( String.valueOf(  curMov.getInt( curMov.getColumnIndex("Precio") ) ));
+
             pgloIdProducto = curMov.getInt(curMov.getColumnIndex("IdProducto"));
+            pgloIdApertura = IdApertura;
         }
         db.close();
+    }catch(Exception ex){
+        db.close();
+        ex.printStackTrace();
+    }
+
+
+
+    }
+
+    private void setearApertura(){
+        VentasDbHelper ventasDbHelper = new VentasDbHelper(this.getContext());
+        SQLiteDatabase database = ventasDbHelper.getReadableDatabase();
+
+        try {
+            Cursor cur = database.query(VentasContract.VentasEntry.TABLE_NAME_APERTURA,
+                    null,
+                    "EstadoApertura=?",
+                    new String[]{"1"},
+                    null,
+                    null,
+                    "IdApertura desc"
+            );
+
+            if (cur.moveToFirst()) {
+                int IdApertura = cur.getInt(cur.getColumnIndex("IdApertura"));
+                pgloIdApertura = IdApertura;
+                edtxtIdApertura.setText(String.valueOf(IdApertura));
+            } else {
+                Toast.makeText(getContext(), "No existe una apertura activa, por favor aperture el día.", Toast.LENGTH_SHORT).show();
+            }
+            database.close();
+        }catch(Exception ex) {
+            database.close();
+            ex.printStackTrace();
+        }
 
 
     }

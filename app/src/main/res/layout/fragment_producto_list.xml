@@ -27,51 +27,41 @@
         android:layout_marginBottom="30dp"
         android:background="@drawable/separador_title" />
 
-    <ScrollView
 
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
-            android:orientation="vertical">
+            android:layout_weight="1"
+            >
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
 
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/reclist"
-                android:name="com.example.appcuentas.ProductoFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layoutManager="LinearLayoutManager"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:context=".ProductoFragment"
-                tools:layout_editor_absoluteX="0dp"
                 tools:listitem="@layout/fragment_producto_item">
 
-
             </androidx.recyclerview.widget.RecyclerView>
+    </ScrollView>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabAddProduct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="30dp"
-                android:layout_marginBottom="40dp"
+
+                android:layout_gravity="bottom|end"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
                 android:clickable="true"
-                android:foregroundGravity="bottom"
-                android:overScrollMode="always"
-                android:src="@drawable/add_icon_blue"
-                app:backgroundTint="@color/colorPrimaryDark"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:srcCompat="@drawable/add_icon_blue" />
+                android:src="@drawable/add_plus_32"
+                 />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
 
-    </ScrollView>
 
     <TextView
         android:id="@+id/txtResumen"

@@ -34,12 +34,23 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/separador_title"/>
 
-            <TextView
-                android:id="@+id/txtIdAperture"
-                android:layout_width="120dp"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtlIdApertura"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:hint="IdApertura"
-                />
+                android:textColorHint="@color/colorPrimaryDark"
+                >
+                <EditText
+                    android:id="@+id/edtxtIdAperture"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/apert_codigo_apertura"
+                    android:inputType="textPersonName"
+                    android:enabled="false"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -49,7 +60,7 @@
 
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="120dp"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:textColorHint="@color/colorPrimaryDark"
                 >
@@ -62,25 +73,40 @@
                     />
 
             </com.google.android.material.textfield.TextInputLayout>
+
                 <ImageButton
                     android:id="@+id/imgbFechaInicioAperture"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@android:drawable/ic_menu_my_calendar"></ImageButton>
+                    android:src="@drawable/calendar_icons_48"></ImageButton>
 
             </LinearLayout>
 
-            <RadioButton
-                android:id="@+id/rdbEstado"
+            <RadioGroup
+                android:id="@+id/rdgEstado"
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                >
+
+            <RadioButton
+                android:id="@+id/rdbEstadoAbierta"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorPrimaryDark"
-                android:text="@string/apert_estado"
+                android:text="Abierta"
+                android:checked="true"
                 />
+                <RadioButton
+                    android:id="@+id/rdbEstadoCerrada"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:text="Cerrada"
+                    >
+            </RadioButton>
 
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+            </RadioGroup>
 
             <CheckBox
                 android:id="@+id/chkSincronizado"
@@ -89,35 +115,6 @@
                 android:layout_weight="1"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="@string/apert_sincronizado" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColorHint="@color/colorPrimaryDark"
-                >
-                <EditText
-                    android:id="@+id/edtxtEstadoAperture"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/apert_estado_apertura"
-                    android:inputType="textPersonName"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColorHint="@color/colorPrimaryDark"
-                >
-
-                <EditText
-                    android:id="@+id/edtxtSincronizado"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/apert_sincronizado"
-                    android:inputType="numberDecimal" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"

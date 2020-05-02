@@ -27,52 +27,45 @@
         android:layout_marginBottom="30dp"
         android:background="@drawable/separador_title" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_weight="1"
+            >
 
-
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recListAperture"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layoutManager="LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 tools:listitem="@layout/fragment_aperture_item"
                 >
 
-
             </androidx.recyclerview.widget.RecyclerView>
+    </ScrollView>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabAddAperture"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="40dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
                 android:clickable="true"
-                android:src="@drawable/add_icon_blue"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:src="@drawable/add_plus_32"
+                />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+        </FrameLayout>
+
 
     <TextView
-        android:id="@+id/txtResumen"
+        android:id="@+id/txtAperturaResumen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"

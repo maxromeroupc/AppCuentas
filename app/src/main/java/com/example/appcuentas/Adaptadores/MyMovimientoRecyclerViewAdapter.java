@@ -28,9 +28,14 @@ public class MyMovimientoRecyclerViewAdapter extends RecyclerView.Adapter<MyMovi
     private final List<Movimiento> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyMovimientoRecyclerViewAdapter(List<Movimiento> items, OnListFragmentInteractionListener listener) {
+    private static final int MODE_CONSULT = 1;
+    private static final int MODE_EDIT = 2;
+    private int optionMode = 2;
+
+    public MyMovimientoRecyclerViewAdapter(List<Movimiento> items, OnListFragmentInteractionListener listener, int optionMode) {
         mValues = items;
         mListener = listener;
+        this.optionMode = optionMode;
     }
 
     @Override
@@ -48,6 +53,10 @@ public class MyMovimientoRecyclerViewAdapter extends RecyclerView.Adapter<MyMovi
         holder.txtPrecioVenta.setText(String.valueOf(mValues.get(position).getPrecio() ));
         holder.txtTotal.setText( String.valueOf(mValues.get(position).getTotal() ) );
 
+        if(optionMode == MODE_CONSULT) {
+            holder.ibtnEditMov.setVisibility(View.INVISIBLE);
+            holder.ibtnDelMov.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

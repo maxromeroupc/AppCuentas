@@ -1,15 +1,22 @@
 package com.example.appcuentas.Adaptadores;
 
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appcuentas.Datos.VentasContract;
+import com.example.appcuentas.Datos.VentasDbHelper;
 import com.example.appcuentas.Entidades.Apertura;
+import com.example.appcuentas.ListApertureFragment;
 import com.example.appcuentas.R;
 
 import java.text.SimpleDateFormat;
@@ -17,13 +24,17 @@ import java.util.Date;
 import java.util.List;
 
 
-public class ApertureViewAdapter extends RecyclerView.Adapter<ApertureViewAdapter.ApertureViewHolder> {
+public class ApertureViewAdapter extends RecyclerView.Adapter<ApertureViewAdapter.ApertureViewHolder>
+    implements View.OnClickListener{
 
 
     private List<Apertura> lstAperture;
+    private ListApertureFragment listApertureFragment;
+    private View.OnClickListener clickListener;
 
-    public ApertureViewAdapter( List<Apertura> lstAperture ){
+    public ApertureViewAdapter( List<Apertura> lstAperture, ListApertureFragment listApertureFragment ){
         this.lstAperture = lstAperture;
+        this.listApertureFragment = listApertureFragment;
     }
 
     @NonNull
@@ -32,6 +43,7 @@ public class ApertureViewAdapter extends RecyclerView.Adapter<ApertureViewAdapte
         View view = LayoutInflater.from( parent.getContext() )
                 .inflate( R.layout.fragment_aperture_item, parent,false ) ;
 
+        view.setOnClickListener(this);
         ApertureViewHolder apertureViewHolder = new ApertureViewHolder(view);
 
         return apertureViewHolder;
@@ -46,12 +58,30 @@ public class ApertureViewAdapter extends RecyclerView.Adapter<ApertureViewAdapte
         holder.txtFechaInicioAperture.setText( dateToStr( oAperture.getFechaInicioApertura()) );
         holder.txtEstadoAperture.setText(String.valueOf( oAperture.getEstadoApertura()) );
         holder.txtSincronizado.setText( String.valueOf(oAperture.getSincronizado()) );
+
+
     }
 
     @Override
     public int getItemCount() {
         return lstAperture.size();
     }
+
+    @Override
+    public void onClick(View v) {
+        if( clickListener != null){
+            clickListener.onClick(v);;
+        }
+
+    }
+
+    public void setOnClickListener( View.OnClickListener listener ){
+        clickListener = listener;
+    }
+
+
+
+
 
     private String dateToStr(Date date){
         String strFecha = "";
@@ -62,13 +92,15 @@ public class ApertureViewAdapter extends RecyclerView.Adapter<ApertureViewAdapte
         return strFecha;
     }
 
-    class ApertureViewHolder extends RecyclerView.ViewHolder{
+
+
+    class ApertureViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public View mView;
         public Apertura mItemAperture;
 
         public TextView txtIdAperture, txtFechaInicioAperture, txtEstadoAperture, txtSincronizado;
-        public Button btnEditAperture,  btnDelAperture;
+        public ImageButton ibtnEditAperture,  ibtnDelAperture;
 
         public ApertureViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -78,10 +110,43 @@ public class ApertureViewAdapter extends RecyclerView.Adapter<ApertureViewAdapte
             txtEstadoAperture = itemView.findViewById(R.id.txtEstadoApertura);
             txtSincronizado = itemView.findViewById(R.id.txtSincronizado);
 
-            //btnEditAperture = itemView.findViewById(R.id.ibtnEditAperture);
-            //btnDelAperture = itemView.findViewById(R.id.ibtnDelAperture);
+            ibtnEditAperture = itemView.findViewById(R.id.ibtnEditAperture);
+            ibtnDelAperture = itemView.findViewById(R.id.ibtnDelAperture);
+
+
+            ibtnEditAperture.setOnClickListener(this);
+            ibtnDelAperture.setOnClickListener(this);
 
         }
+
+        @Override
+        public void onClick(View v) {
+            switch(v.getId()){
+                case R.id.ibtnEditAperture:
+                    listApertureFragment.goToEdit( Integer.parseInt( txtIdAperture.getText().toString() ));
+                    break;
+
+                case R.id.ibtnDelAperture:
+                    deleteAperture(txtIdAperture.getText().toString());
+                    listApertureFragment.onRefreshFromDelete();
+                    Toast.makeText(mView.getContext(),"Registro eliminado",Toast.LENGTH_SHORT).show();
+                    break;
+
+            }
+        }
+
+        private void deleteAperture(String strIdAperture) {
+            VentasDbHelper ventasDbHelper = new VentasDbHelper(mView.getContext());
+            SQLiteDatabase database = ventasDbHelper.getWritableDatabase();
+            database.delete(VentasContract.VentasEntry.TABLE_NAME_APERTURA,
+                    "IdApertura=?",
+                    new String[]{strIdAperture}
+                    );
+            database.close();
+
+        }
+
+
     }
 
 }

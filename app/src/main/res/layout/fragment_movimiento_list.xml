@@ -28,50 +28,38 @@
             android:layout_marginBottom="30dp"
             android:background="@drawable/separador_title" />
 
-        <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_weight="1"
+        >
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
 
+            >
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recListMovement"
-                android:name="com.example.appcuentas.ListarMovimientoFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layoutManager="LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:context=".ListarMovimientoFragment"
                 tools:listitem="@layout/fragment_movimiento_item">
-
 
             </androidx.recyclerview.widget.RecyclerView>
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabAddMov"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+        </ScrollView>
 
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="40dp"
-                android:clickable="true"
-                android:src="@drawable/add_icon_blue"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddMov"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+            android:layout_gravity="bottom|end"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:src="@drawable/add_plus_32" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/txtResumen"
@@ -80,5 +68,7 @@
         android:layout_margin="10dp"
         android:textColor="@color/colorPrimaryDark"
         android:text="Resumen" />
+
+
 
 </LinearLayout>

@@ -8,19 +8,26 @@ public class Movimiento {
     private int cantidad;
     private float precio;
     private float total;
+    private int idApertura;
 
-    public Movimiento(){
-
-    }
-
-    public Movimiento(int idMovimiento, int idProducto, String producto, int cantidad, float precio, float costo) {
+    public Movimiento(int idMovimiento, int idProducto, String producto, int cantidad, float precio, float total, int idApertura) {
         this.idMovimiento = idMovimiento;
         this.idProducto = idProducto;
         this.producto = producto;
         this.cantidad = cantidad;
         this.precio = precio;
-        this.total = costo;
+        this.total = total;
+        this.idApertura = idApertura;
     }
+
+
+
+
+
+    public Movimiento(){
+
+    }
+
 
     public int getIdMovimiento() {
         return idMovimiento;
@@ -68,5 +75,12 @@ public class Movimiento {
 
     public void setTotal(float total) {
         this.total = total;
+    }
+    public int getIdApertura() {
+        return idApertura;
+    }
+
+    public void setIdApertura(int idApertura) {
+        this.idApertura = idApertura;
     }
 }

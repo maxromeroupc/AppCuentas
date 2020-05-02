@@ -15,8 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.appcuentas.Adaptadores.MyMovimientoRecyclerViewAdapter;
+import com.example.appcuentas.Datos.VentasContract;
 import com.example.appcuentas.Datos.VentasDbHelper;
 import com.example.appcuentas.Entidades.Movimiento;
 
@@ -45,8 +47,13 @@ public class ListarMovimientoFragment extends Fragment {
     private FloatingActionButton fabAddMov;
 
     private TextView txtResumen;
-    private int vgloCantidadTotalMov = 0;
+    private int vgloCantidadTotalMov = 0, vgloIdApertura = 0;
     private float vgloTotalMov = 0;
+
+    //mode visualization frame
+    private static final int MODE_CONSULT = 1;
+    private static final int MODE_EDIT = 2;
+    private int optionMode = 2;
     //endregion
 
 
@@ -75,13 +82,27 @@ public class ListarMovimientoFragment extends Fragment {
         recListMov = view.findViewById(R.id.recListMovement);
         fabAddMov= view.findViewById(R.id.fabAddMov);
 
+        //case when from list aperture it's read only
+        if(getArguments() != null){
+            Bundle b = getArguments();
+            vgloIdApertura = b.getInt("idApertura");
+            optionMode = MODE_CONSULT;
+        }
 
         //Set Values
+        setearApertura();
         setListMovement();
         setListenerFabActionButton();
         setValues();
+        setControls();
 
         return view;
+    }
+
+    private void setControls() {
+        if( optionMode == MODE_CONSULT ) {
+            fabAddMov.setVisibility( View.INVISIBLE);
+        }
     }
 
 
@@ -135,7 +156,7 @@ public class ListarMovimientoFragment extends Fragment {
     private void setListMovement(){
         recListMov.setLayoutManager(new LinearLayoutManager(getContext()) );
         List<Movimiento> listMovAdapter = listarMovimientos();
-        recListMov.setAdapter(new MyMovimientoRecyclerViewAdapter(listMovAdapter, mListener));
+        recListMov.setAdapter(new MyMovimientoRecyclerViewAdapter(listMovAdapter, mListener, optionMode));
     }
 
 
@@ -144,11 +165,13 @@ public class ListarMovimientoFragment extends Fragment {
         VentasDbHelper ventasDbHelper = new VentasDbHelper(this.getContext());
         SQLiteDatabase db = ventasDbHelper.getReadableDatabase();
         try {
+
             Cursor curListMov =
-                    db.rawQuery("select IdMovimiento,v.IdProducto, NombreProducto,v.Cantidad,v.Precio," +
+                    db.rawQuery("select v.IdApertura,IdMovimiento,v.IdProducto, NombreProducto,v.Cantidad,v.Precio," +
                                     "v.Descuento, v.Total from Movimiento v" +
-                                    " inner join Producto p on p.IdProducto = v.IdProducto",
-                            null);
+                                    " inner join Producto p on p.IdProducto = v.IdProducto " +
+                                    "where IdApertura = ?",
+                            new String[]{ String.valueOf(vgloIdApertura)});
 
             if(curListMov.moveToFirst()){
                 do{
@@ -156,8 +179,10 @@ public class ListarMovimientoFragment extends Fragment {
                     oMovimiento.setIdMovimiento(curListMov.getInt(curListMov.getColumnIndex("IdMovimiento")));
                     oMovimiento.setProducto(curListMov.getString(curListMov.getColumnIndex("NombreProducto")));
                     oMovimiento.setTotal(curListMov.getFloat(curListMov.getColumnIndex("Total")));
+                    oMovimiento.setIdApertura(curListMov.getInt(curListMov.getColumnIndex("IdApertura")));
                     vgloCantidadTotalMov = vgloCantidadTotalMov + 1;
-                    vgloTotalMov = vgloTotalMov + oMovimiento.getPrecio();
+                    vgloTotalMov = vgloTotalMov + oMovimiento.getTotal();
+
                     listMov.add(oMovimiento);
                 }while(curListMov.moveToNext());
 
@@ -176,8 +201,46 @@ public class ListarMovimientoFragment extends Fragment {
         return listMov;
     }
 
+    private void setearApertura() {
+        VentasDbHelper ventasDbHelper = new VentasDbHelper(this.getContext());
+        SQLiteDatabase database = ventasDbHelper.getReadableDatabase();
+
+        if( vgloIdApertura != 0){
+            //vgloIdApertura = 3;
+            return;
+        }
+
+        try {
+            Cursor cur = database.query(VentasContract.VentasEntry.TABLE_NAME_APERTURA,
+                    null,
+                    "EstadoApertura=?",
+                    new String[]{"1"},
+                    null,
+                    null,
+                    "IdApertura desc"
+            );
+
+            if (cur.moveToFirst()) {
+                int IdApertura = cur.getInt(cur.getColumnIndex("IdApertura"));
+                vgloIdApertura = IdApertura;
+            } else {
+                Toast.makeText(getContext(), "No existe una apertura activa, por favor aperture el día.", Toast.LENGTH_SHORT).show();
+            }
+            database.close();
+
+
+        } catch (Exception ex) {
+            database.close();
+            ex.printStackTrace();
+        }
+    }
+
     private void setValues(){
-        txtResumen.setText( "Cantidad : " + String.valueOf(vgloCantidadTotalMov) + " - Total : " + String.valueOf(vgloTotalMov));
+
+        String strRes = "";
+        strRes = "Cantidad : " + String.valueOf(vgloCantidadTotalMov) + " - Total : " + String.valueOf(vgloTotalMov);
+        strRes = strRes + " - Apertura : " + String.valueOf(vgloIdApertura);
+        txtResumen.setText( strRes );
     }
 
     //endregion
